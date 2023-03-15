@@ -128,6 +128,9 @@ def run(args):
     model_resolver = ModelResolver()
 
     def get_model(name: str) -> ModelSpec:
+        if name == "llama":
+            return ModelSpec(name="llama", model="llama", is_chat=False, n_ctx=2048)
+
         return model_resolver.resolve(name)
 
     completion_model_specs = [get_model(model) for model in args.model.split(",")]

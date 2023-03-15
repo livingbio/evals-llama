@@ -16,8 +16,8 @@ from evals.prompt.base import (
 )
 from evals.record import record_match, record_sampling
 from evals.utils.api_utils import (
-    openai_chat_completion_create_retrying,
-    openai_completion_create_retrying,
+    completion,
+    chat_completion
 )
 
 logger = logging.getLogger(__name__)
@@ -67,16 +67,15 @@ def completion_query(
     openai_create_prompt: Union[
         OpenAICreatePrompt, OpenAICreateChatPrompt
     ] = prompt.to_openai_create_prompt()
-
     if model_spec.is_chat:
-        result = openai_chat_completion_create_retrying(
+        result = chat_completion(
             model=model_spec.model,
             api_key=model_spec.api_key,
             messages=openai_create_prompt,
             **{**kwargs, **model_spec.extra_options},
         )
     else:
-        result = openai_completion_create_retrying(
+        result = completion(
             model=model_spec.model,
             api_key=model_spec.api_key,
             prompt=openai_create_prompt,
