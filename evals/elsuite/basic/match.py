@@ -43,3 +43,15 @@ class Match(evals.Eval):
         return {
             "accuracy": evals.metrics.get_accuracy(events),
         }
+
+class LLAMAMatch(Match):
+    def eval_sample(self, sample: Any, *_):
+        prompt = sample["input"]
+        if self.num_few_shot > 0:
+            assert is_chat_prompt(sample["input"]), "few shot requires chat prompt"
+            prompt = sample["input"][:-1]
+            for s in self.few_shot[: self.num_few_shot]:
+                prompt += s["sample"]
+            prompt += sample["input"][-1:]
+
+        return evals.check_sampled_text(self.model_spec, prompt, expected=sample["ideal"])
